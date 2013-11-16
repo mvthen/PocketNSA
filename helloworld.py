@@ -1,5 +1,6 @@
 import webapp2
 from twilio import twiml
+from models import Company
 
 
 class MainPage(webapp2.RequestHandler):
@@ -14,6 +15,13 @@ class HelloMonkey(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/xml'
         self.response.write(str(r))
 
+class AddCompanies(webapp2.RequestHandler):
+    def get(self):
+        company = Company(name='Target', number="987987")
+        company.put()
+        self.response.headers['Content-Type'] = 'text/plain'
+        self.response.write('added')
+
 app = webapp2.WSGIApplication([
-                                  ('/twiml', HelloMonkey), ('/', MainPage)],
+                                  ('/twiml', HelloMonkey), ('/', MainPage), ('/addcompany', AddCompanies)],
                               debug=True)
