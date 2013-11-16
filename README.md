@@ -11,14 +11,19 @@ Install twilio google appengine client
 Install virtualenv:
 $ sudo easy_install pip
 $ sudo pip install virtualenv
+
 Set up a virtual python environment:
 $ virtualenv --distribute venv
+
 Activate virtualenv:
 $ source venv/bin/activate
+
 Use pip to install Twilio's Python library and dependencies:
 $ pip install twilio
+
 Deactivate your virtual environment:
 $ deactivate
+
 Link the Twilio library and its dependencies into your project:
 $ ln -s venv/lib/python2.7/site-packages/twilio .
 $ ln -s venv/lib/python2.7/site-packages/httplib2 .
