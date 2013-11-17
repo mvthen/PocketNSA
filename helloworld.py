@@ -31,6 +31,7 @@ class RecordingTwimlet(webapp2.RequestHandler):
         self.response.write(recording_xml)
 
 class GetAudioURL(webapp2.RequestHandler):
+
     def post(self):
         audioURL=self.request.get('RecordingUrl')
         fromNum=self.request.get('To')
@@ -39,7 +40,7 @@ class GetAudioURL(webapp2.RequestHandler):
         client = TwilioRestClient(account_sid, auth_token)
         rv = client.sms.messages.create(to= fromNum,
                                 from_="+19177468448",
-                                body=audioURL)
+                                body="This is your audio URL: "+audioURL)
         self.response.write(str(rv))
 
 class TextResponse(webapp2.RequestHandler):
