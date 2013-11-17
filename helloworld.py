@@ -38,16 +38,21 @@ class TextResponse(webapp2.RequestHandler):
         client = TwilioRestClient(account_sid, auth_token)
         bodyMessage = self.request.get('Body')
         fromNum = self.request.get('From')
-        returnCall = client.calls.create(to=self.request.get('From'),
+
+        returnCall = client.calls.create(to=fromNum,
                                 from_="+19177468448",
                                 url="http://twimlets.com/conference?Name="+fromNum)
+
+        recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
+
         call = client.calls.create(to=bodyMessage,
                                     from_="+19177468448",
-                                    url="http://twimlets.com/conference?Name="+fromNum)
-        recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
-        recordCall = client.calls.create(to="+19177461446",
-                                       from_="+19177468448",
-                                     url=recordingURL)
+                                    url=recordingURL)
+        
+        #recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
+        #recordCall = client.calls.create(to="+19177461446",
+        #                               from_="+19177468448",
+                                     #url="http://twimlets.com/conference?Name="+fromNum))
 
 
         self.response.headers['Content-Type'] = 'text/xml'
