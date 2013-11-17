@@ -24,29 +24,27 @@ class HelloMonkey(webapp2.RequestHandler):
         self.response.write(str(r))
 
 class RecordingTwimlet(webapp2.RequestHandler):
-    def get(self):
+    def post(self):
         conf_name = self.request.get('conf_name')
         recording_xml = '<Response><Dial record="true"><Conference>'+conf_name+'</Conference> </Dial></Response>'
         self.response.headers['Content-Type'] = 'text/xml'
         self.response.write(recording_xml)
 
 class TextResponse(webapp2.RequestHandler):
-
     def post(self):
         r = twiml.Response()
         account_sid = "ACe77d9c1b662b932535ee1a28277cda39"
         auth_token = "0bbe3fb6b91364e4a6dd22eb2894ae96"
         client = TwilioRestClient(account_sid, auth_token)
         bodyMessage = self.request.get('Body')
-
+        fromNum = self.request.get('From')
         returnCall = client.calls.create(to=self.request.get('From'),
                                 from_="+19177468448",
-                                url="http://twimlets.com/conference?Name="+self.request.get('From'))
-        call = client.calls.create(to=self.request.get('Body'),
+                                url="http://twimlets.com/conference?Name="+fromNum)
+        call = client.calls.create(to=bodyMessage,
                                     from_="+19177468448",
-                                    url="http://twimlets.com/conference?Name="+self.request.get('From'))
-
-        recordingURL = "http://twimlets.com/echo?Twiml=%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3CResponse%3E%0A%20%20%3CDial%20record%3D%22true%22%3E%0A%20%20%20%20%3CConference%3E"+self.request.get('From')+"%3C%2FConference%3E%0A%20%20%3C%2FDial%3E%0A%3C%2FResponse%3E&"
+                                    url="http://twimlets.com/conference?Name="+fromNum)
+        recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
         recordCall = client.calls.create(to="+19177461446",
                                        from_="+19177468448",
                                      url=recordingURL)
