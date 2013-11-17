@@ -26,9 +26,21 @@ class HelloMonkey(webapp2.RequestHandler):
 class RecordingTwimlet(webapp2.RequestHandler):
     def post(self):
         conf_name = self.request.get('conf_name')
-        recording_xml = '<Response><Dial record="true"><Conference>'+conf_name+'</Conference> </Dial></Response>'
+        recording_xml = '<Response><Dial record="true" action="http://q-back.appspot.com/audio_url"><Conference>'+conf_name+'</Conference> </Dial></Response>'
         self.response.headers['Content-Type'] = 'text/xml'
         self.response.write(recording_xml)
+
+class GetAudioURL(webapp2.RequestHandler):
+    def post(self):
+        audioURL=self.request.get('RecordingUrl')
+        fromNum=self.request.get('To')
+        account_sid = "ACe77d9c1b662b932535ee1a28277cda39"
+        auth_token = "0bbe3fb6b91364e4a6dd22eb2894ae96"
+        client = TwilioRestClient(account_sid, auth_token)
+        rv = client.sms.messages.create(to= fromNum,
+                                from_="+19177468448",
+                                body=audioURL)
+        self.response.write(str(rv))
 
 class TextResponse(webapp2.RequestHandler):
     def post(self):
@@ -38,23 +50,14 @@ class TextResponse(webapp2.RequestHandler):
         client = TwilioRestClient(account_sid, auth_token)
         bodyMessage = self.request.get('Body')
         fromNum = self.request.get('From')
-
+        recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
         returnCall = client.calls.create(to=fromNum,
                                 from_="+19177468448",
-                                url="http://twimlets.com/conference?Name="+fromNum)
-
-        recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
+                                url=recordingURL)
 
         call = client.calls.create(to=bodyMessage,
                                     from_="+19177468448",
-                                    url=recordingURL)
-        
-        #recordingURL = 'http://q-back.appspot.com/recording?conf_name='+fromNum
-        #recordCall = client.calls.create(to="+19177461446",
-        #                               from_="+19177468448",
-                                     #url="http://twimlets.com/conference?Name="+fromNum))
-
-
+                                    url="http://twimlets.com/conference?Name="+fromNum)
         self.response.headers['Content-Type'] = 'text/xml'
         self.response.write(str(r))
 
@@ -81,5 +84,5 @@ class SendSMS(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
-                                  ('/twiml', HelloMonkey),('/recording', RecordingTwimlet), ('/sms_response', TextResponse), ('/send_sms', SendSMS), ('/', MainPage), ('/addcompany', AddCompanies)],
+                                  ('/twiml', HelloMonkey),('/audio_url', GetAudioURL), ('/recording', RecordingTwimlet), ('/sms_response', TextResponse), ('/send_sms', SendSMS), ('/', MainPage), ('/addcompany', AddCompanies)],
                               debug=True)
